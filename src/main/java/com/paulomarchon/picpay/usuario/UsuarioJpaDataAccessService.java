@@ -1,8 +1,10 @@
 package com.paulomarchon.picpay.usuario;
 
+import com.paulomarchon.picpay.usuario.payload.UsuarioDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository("usuario-jpa")
 public class UsuarioJpaDataAccessService implements UsuarioDao{
@@ -15,6 +17,11 @@ public class UsuarioJpaDataAccessService implements UsuarioDao{
     @Override
     public List<Usuario> buscarTodosUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    @Override
+    public Optional<Usuario> buscarUsuarioPorId(Long id) {
+        return usuarioRepository.findById(id);
     }
 
     @Override

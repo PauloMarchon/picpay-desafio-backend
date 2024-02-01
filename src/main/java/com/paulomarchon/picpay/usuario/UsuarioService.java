@@ -1,13 +1,12 @@
 package com.paulomarchon.picpay.usuario;
 
-import com.paulomarchon.picpay.exception.IdentidadeInvalidaException;
-import com.paulomarchon.picpay.exception.UsuarioComEmailJaCadastradoException;
-import com.paulomarchon.picpay.exception.UsuarioComIdentidadeJaCadastradaException;
+import com.paulomarchon.picpay.exception.*;
 import com.paulomarchon.picpay.usuario.payload.CadastroUsuarioDto;
 import com.paulomarchon.picpay.usuario.payload.UsuarioDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,12 @@ public class UsuarioService {
                 .map(usuarioDtoMapper)
                 .collect(Collectors.toList());
     }
+
+    public Usuario buscarUsuarioPorId(Long id) {
+        return usuarioDao.buscarUsuarioPorId(id)
+                .orElseThrow(UsuarioNaoEncontradoException::new);
+    }
+
     public UsuarioDto cadastrarUsuario(CadastroUsuarioDto cadastroUsuarioDto) {
         if (usuarioDao.identidadeDeUsuarioJaFoiRegistrado(cadastroUsuarioDto.identidade()))
             throw new UsuarioComIdentidadeJaCadastradaException();
@@ -46,6 +51,23 @@ public class UsuarioService {
         usuarioDao.cadastrarUsuario(usuario);
 
         return usuarioDtoMapper.apply(usuario);
+    }
+
+    public void adicionarAoSaldoDoUsuario(Usuario usuario, BigDecimal valor) {
+        verificaSeValorEMaiorQueZero(valor);
+
+        usuario.setSaldo(usuario.getSaldo().add(valor));
+    }
+
+    public void subtrairDoSaldoDoUsuario(Usuario usuario, BigDecimal valor) {
+        verificaSeValorEMaiorQueZero(valor);
+
+        usuario.setSaldo(usuario.getSaldo().subtract(valor));
+    }
+
+    private void verificaSeValorEMaiorQueZero(BigDecimal valor){
+        if (valor.compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException("Valor deve ser maior que zero");
     }
 
     private TipoUsuario defineTipoDoUsuario(String identidade) {

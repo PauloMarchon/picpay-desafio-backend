@@ -11,6 +11,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -155,4 +157,63 @@ public class UsuarioServiceTest {
         //Then
         verify(usuarioDao, never()).cadastrarUsuario(any());
     }
+
+   @Test
+   void deveAdicionarAoSaldoDoUsuarioComSucesso(){
+        //Given
+        Usuario usuarioFisico = new Usuario(1L,"Primero Completo", "12345678989", "fisico@email.com", "senha123" ,TipoUsuario.PESSOA_FISICA);
+        usuarioFisico.setSaldo(BigDecimal.valueOf(100.00));
+        BigDecimal valorASerAdicionado = BigDecimal.valueOf(10.0);
+
+        //When
+        emTeste.adicionarAoSaldoDoUsuario(usuarioFisico, valorASerAdicionado);
+
+        //Then
+        assertThat(usuarioFisico.getSaldo().compareTo(BigDecimal.valueOf(110.00))).isZero();
+
+   }
+
+   @Test
+   void deveFalharAoTentarAdicionarAoSaldoDoUsuarioUmValorIgualOuMenorQueZero() {
+       //Given
+       Usuario usuarioFisico = new Usuario(1L,"Primero Completo", "12345678989", "fisico@email.com", "senha123" ,TipoUsuario.PESSOA_FISICA);
+       usuarioFisico.setSaldo(BigDecimal.valueOf(100.00));
+       BigDecimal valorASerAdicionado = BigDecimal.valueOf(0);
+
+       //When
+       assertThatThrownBy(() -> emTeste.adicionarAoSaldoDoUsuario(usuarioFisico, valorASerAdicionado)).isInstanceOf(IllegalArgumentException.class).hasMessage("Valor deve ser maior que zero");
+
+       //Then
+       assertThat(usuarioFisico.getSaldo().compareTo(BigDecimal.valueOf(100.00))).isZero();
+   }
+
+    @Test
+    void deveSubtrairDoSaldoDousuarioComSucesso() {
+        //Given
+        Usuario usuarioFisico = new Usuario(1L,"Primero Completo", "12345678989", "fisico@email.com", "senha123" ,TipoUsuario.PESSOA_FISICA);
+        usuarioFisico.setSaldo(BigDecimal.valueOf(100.00));
+        BigDecimal valorASerSubtraido = BigDecimal.valueOf(20.00);
+
+        //When
+        emTeste.subtrairDoSaldoDoUsuario(usuarioFisico, valorASerSubtraido);
+
+        //Then
+        assertThat(usuarioFisico.getSaldo().compareTo(BigDecimal.valueOf(80.00))).isZero();
+    }
+
+    @Test
+    void deveFalharAoTentarSubtrairDoSaldoDoUsuarioUmValorIgualOuMenorQueZero() {
+        //Given
+        Usuario usuarioFisico = new Usuario(1L,"Primero Completo", "12345678989", "fisico@email.com", "senha123" ,TipoUsuario.PESSOA_FISICA);
+        usuarioFisico.setSaldo(BigDecimal.valueOf(100.00));
+        BigDecimal valorASerSubtraido = BigDecimal.valueOf(-10.00);
+
+        //When
+        assertThatThrownBy(() -> emTeste.adicionarAoSaldoDoUsuario(usuarioFisico, valorASerSubtraido)).isInstanceOf(IllegalArgumentException.class).hasMessage("Valor deve ser maior que zero");
+
+        //Then
+        assertThat(usuarioFisico.getSaldo().compareTo(BigDecimal.valueOf(100.00))).isZero();
+    }
+
 }
+

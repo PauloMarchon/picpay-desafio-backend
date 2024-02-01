@@ -55,4 +55,14 @@ public class UsuarioJpaDataAccessServiceTest {
         //Then
         verify(usuarioRepository).existsByEmail(email);
     }
+
+    @Test
+    void deveSelecionarUsuarioPorId() {
+        //Given
+        Long id = 1L;
+        //When
+        emTeste.buscarUsuarioPorId(id);
+        //Then
+        verify(usuarioRepository).findById(id);
+    }
 }

@@ -43,6 +43,16 @@ public class Usuario {
         this.tipoUsuario = tipoUsuario;
     }
 
+    public Usuario(Long id, String nomeCompleto, String identidade, String email, String senha, TipoUsuario tipoUsuario) {
+        this.id = id;
+        this.nomeCompleto = nomeCompleto;
+        this.identidade = identidade;
+        this.email = email;
+        this.senha = senha;
+        this.saldo = BigDecimal.ZERO;
+        this.tipoUsuario = tipoUsuario;
+    }
+
     public BigDecimal getSaldo() {
         return saldo;
     }
